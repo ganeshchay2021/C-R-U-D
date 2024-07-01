@@ -33,11 +33,13 @@ class FirebaseService {
 
   //update
   Future<void> updateEmpDetails(
-      String docId, String newName, String newAge, String newLocation) {
+      String docId, String newName, String newAge, String newLocation, String imageUrl) {
     return empDetails.doc(docId).update({
       "Name": newName,
       "Age": newAge,
       "Location": newLocation,
+      "Image": imageUrl,
+
     });
   }
 }

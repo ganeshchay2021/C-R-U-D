@@ -1,11 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:crudapp/pages/Emply%20Form%20Screen/widget/emp_text_field.dart';
 import 'package:crudapp/pages/Emply%20Form%20Screen/widget/save_button.dart';
+import 'package:image_picker/image_picker.dart';
 
-class EmployeeCard extends StatelessWidget {
+class EmployeeCard extends StatefulWidget {
   final String name;
   final String age;
   final String image;
@@ -21,6 +25,52 @@ class EmployeeCard extends StatelessWidget {
     required this.onTap,
     required this.docId,
   });
+
+  @override
+  State<EmployeeCard> createState() => _EmployeeCardState();
+}
+
+class _EmployeeCardState extends State<EmployeeCard> {
+  final imagePicker = ImagePicker();
+  String imageUrl = "";
+  bool isLoading = false;
+  String? value;
+  File? _image;
+
+  FirebaseStorage storage = FirebaseStorage.instance;
+
+  Future<void> getImage() async {
+    try {
+      final pickfile = await imagePicker.pickImage(
+          source: ImageSource.gallery, imageQuality: 100);
+
+      if (pickfile != null) {
+        setState(() {
+          _image = File(pickfile.path);
+        });
+      } else {
+        const Text("No Image Selected");
+      }
+    } catch (e) {
+      Text("Error in picking image: $e");
+    }
+  }
+
+  // Future<void> uploadImage() async {
+  //   if (_image != null) {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+
+  //     Reference referenceImageUpload = storage.refFromURL(widget.image);
+  //     await referenceImageUpload.putFile(File(_image!.path));
+  //     var url = await referenceImageUpload.getDownloadURL();
+  //     imageUrl = url;
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -51,22 +101,23 @@ class EmployeeCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(image),
+                        image: NetworkImage(widget.image),
                       ),
                     ),
                   ),
-                  const Spacer(), 
+                  const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      newNameController.text = name;
-                      newAgeController.text = age;
-                      newLocationController.text = location;
+                      newNameController.text = widget.name;
+                      newAgeController.text = widget.age;
+                      newLocationController.text = widget.location;
                       updateDialogBox(
-                        context,
-                        newNameController,
-                        newAgeController,
-                        newLocationController,
-                      );
+                          context,
+                          newNameController,
+                          newAgeController,
+                          newLocationController,
+                          _image,
+                          widget.image);
                     },
                     child: const Icon(
                       Icons.edit,
@@ -77,7 +128,7 @@ class EmployeeCard extends StatelessWidget {
                     width: 20,
                   ),
                   GestureDetector(
-                    onTap: onTap,
+                    onTap: widget.onTap,
                     child: const Icon(
                       Icons.delete,
                       color: Colors.orange,
@@ -87,7 +138,7 @@ class EmployeeCard extends StatelessWidget {
               ),
               Text(
                 maxLines: 2,
-                "Name: $name",
+                "Name: ${widget.name}",
                 style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 19,
@@ -95,7 +146,7 @@ class EmployeeCard extends StatelessWidget {
               ),
               Text(
                 maxLines: 1,
-                "Age : $age",
+                "Age : ${widget.age}",
                 style: const TextStyle(
                     color: Colors.orange,
                     fontSize: 20,
@@ -103,7 +154,7 @@ class EmployeeCard extends StatelessWidget {
               ),
               Text(
                 maxLines: 1,
-                "Country : $location",
+                "Country : ${widget.location}",
                 style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 20,
@@ -120,64 +171,100 @@ class EmployeeCard extends StatelessWidget {
       BuildContext context,
       TextEditingController newNameController,
       TextEditingController newAgeController,
-      TextEditingController newLocationController) {
+      TextEditingController newLocationController,
+      File? newImage,
+      String image) {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          actionsPadding: EdgeInsets.zero,
-          title: RichText(
-            textAlign: TextAlign.center,
-            text: const TextSpan(
-              style: TextStyle(
-                fontSize: 19,
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
-              children: [
-                TextSpan(text: "Edit"),
-                TextSpan(
-                  text: " Details",
-                  style: TextStyle(
-                    color: Colors.orange,
-                  ),
+        return SingleChildScrollView(
+          child: AlertDialog(
+            actionsPadding: EdgeInsets.zero,
+            title: RichText(
+              textAlign: TextAlign.center,
+              text: const TextSpan(
+                style: TextStyle(
+                  fontSize: 19,
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+                children: [
+                  TextSpan(text: "Edit"),
+                  TextSpan(
+                    text: " Details",
+                    style: TextStyle(
+                      color: Colors.orange,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EmpTextField(
-                controller: newNameController,
-                text: "Name",
-                isNumKey: false,
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              EmpTextField(
-                controller: newAgeController,
-                text: "Age",
-                isNumKey: true,
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              EmpTextField(
-                controller: newLocationController,
-                text: "Location",
-                isNumKey: false,
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              SaveButton(
-                  docId: docId,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Center(
+                //   child: GestureDetector(
+                //     onTap: () {
+                //       getImage();
+                //     },
+                //     child: Container(
+                //       height: 75,
+                //       width: 75,
+                //       decoration: BoxDecoration(
+                //         shape: BoxShape.circle,
+                //         border: Border.all(color: Colors.blue, width: 2),
+                //       ),
+                //       child: newImage != null
+                //           ? ClipRRect(
+                //               borderRadius: BorderRadius.circular(100),
+                //               child: Image.file(
+                //                 _image!.absolute,
+                //                 fit: BoxFit.cover,
+                //               ),
+                //             )
+                //           : ClipRRect(
+                //               borderRadius: BorderRadius.circular(100),
+                //               child: Image.network(
+                //                 image,
+                //                 fit: BoxFit.cover,
+                //               ),
+                //             ),
+                //     ),
+                //   ),
+                // ),
+                EmpTextField(
+                  controller: newNameController,
+                  text: "Name",
+                  isNumKey: false,
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                EmpTextField(
+                  controller: newAgeController,
+                  text: "Age",
+                  isNumKey: true,
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                EmpTextField(
+                  controller: newLocationController,
+                  text: "Location",
+                  isNumKey: false,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                SaveButton(
+                  imageUrl: imageUrl,
+                  docId: widget.docId,
                   nameController: newNameController,
                   ageController: newAgeController,
-                  locationController: newLocationController)
-            ],
+                  locationController: newLocationController,
+                )
+              ],
+            ),
           ),
         );
       },

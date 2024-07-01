@@ -75,138 +75,140 @@ class _EmployeeFormScreenState extends State<EmployeeFormScreen> {
         "Employee",
         " Form",
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  getImage();
-                },
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.blue, width: 2)),
-                  child: _image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.file(
-                            _image!.absolute,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(Icons.camera),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    getImage();
+                  },
+                  child: Container(
+                    height: 150,
+                    width: 150,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.blue, width: 2)),
+                    child: _image != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.file(
+                              _image!.absolute,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Icon(Icons.camera),
+                  ),
                 ),
               ),
-            ),
-
-            const SizedBox(
-              height: 10,
-            ),
-            //Textfield of Name
-            EmpTextField(
-              controller: nameController,
-              text: "Name",
-              isNumKey: false,
-            ),
-
-            const SizedBox(
-              height: 10,
-            ),
-            //Textfield of age
-            EmpTextField(
-              controller: ageController,
-              text: "Age",
-              isNumKey: true,
-            ),
-
-            const SizedBox(
-              height: 10,
-            ),
-
-            //Textfield of Country
-            EmpTextField(
-              controller: locationController,
-              isNumKey: false,
-              text: "Location",
-            ),
-
-            const SizedBox(
-              height: 40,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade300,
-                  ),
-                  onPressed: () async {
-                    await uploadImage();
-                    if (nameController.text.isEmpty ||
-                        ageController.text.isEmpty ||
-                        locationController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          duration: Duration(seconds: 1),
-                          backgroundColor: Colors.red,
-                          content: Text(
-                            "Some Field are empty",
+        
+              const SizedBox(
+                height: 10,
+              ),
+              //Textfield of Name
+              EmpTextField(
+                controller: nameController,
+                text: "Name",
+                isNumKey: false,
+              ),
+        
+              const SizedBox(
+                height: 10,
+              ),
+              //Textfield of age
+              EmpTextField(
+                controller: ageController,
+                text: "Age",
+                isNumKey: true,
+              ),
+        
+              const SizedBox(
+                height: 10,
+              ),
+        
+              //Textfield of Country
+              EmpTextField(
+                controller: locationController,
+                isNumKey: false,
+                text: "Location",
+              ),
+        
+              const SizedBox(
+                height: 40,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade300,
+                    ),
+                    onPressed: () async {
+                      await uploadImage();
+                      if (nameController.text.isEmpty ||
+                          ageController.text.isEmpty ||
+                          locationController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(seconds: 1),
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              "Some Field are empty",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        String age = ageController.text.toString();
+                        firebaseService
+                            .addEmpDetails(
+                              nameController.text,
+                              age,
+                              locationController.text,
+                              imageUrl,
+                            )
+                            .then((value) => Fluttertoast.showToast(
+                                  msg: "Details Added Successfully",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM_RIGHT,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16,
+                                ));
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.orange,
+                            ),
+                          )
+                        : const Text(
+                            "Add",
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      );
-                    } else {
-                      String age = ageController.text.toString();
-                      firebaseService
-                          .addEmpDetails(
-                            nameController.text,
-                            age,
-                            locationController.text,
-                            imageUrl,
-                          )
-                          .then((value) => Fluttertoast.showToast(
-                                msg: "Details Added Successfully",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.BOTTOM_RIGHT,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.green,
-                                textColor: Colors.white,
-                                fontSize: 16,
-                              ));
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.orange,
-                          ),
-                        )
-                      : const Text(
-                          "Add",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

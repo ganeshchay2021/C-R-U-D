@@ -7,6 +7,7 @@ class SaveButton extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController ageController;
   final TextEditingController locationController;
+  final String imageUrl;
   final String docId;
 
   const SaveButton({
@@ -14,6 +15,7 @@ class SaveButton extends StatelessWidget {
     required this.nameController,
     required this.ageController,
     required this.locationController,
+    required this.imageUrl,
     required this.docId,
   });
 
@@ -49,8 +51,13 @@ class SaveButton extends StatelessWidget {
                 ),
               );
             } else {
-              firebaseService.updateEmpDetails(docId, nameController.text,
-                  ageController.text, locationController.text);
+              firebaseService.updateEmpDetails(
+                docId,
+                nameController.text,
+                ageController.text,
+                locationController.text,
+                imageUrl,
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   duration: Duration(seconds: 1),
