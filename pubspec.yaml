@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^12.1.0
   random_string: ^2.3.1
   fluttertoast: ^8.2.6
+  onesignal_flutter: ^5.2.1
 
 dev_dependencies:
   flutter_test:
