@@ -13,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize("079f3f4c-fa6b-417a-90cb-490582aa6d62");
   OneSignal.Notifications.requestPermission(true);
@@ -29,7 +30,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
+  void initState() { 
     super.initState();
     initialization();
   }
