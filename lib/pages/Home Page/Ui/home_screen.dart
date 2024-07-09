@@ -79,8 +79,8 @@ class HomePage extends StatelessWidget {
                       String name = data["Name"];
                       String age = data["Age"];
                       String location = data["Location"];
-                      String image=data["Image"];
-                          
+                      String image = data["Image"];
+
                       return EmployeeCard(
                         docId: docId,
                         name: name,

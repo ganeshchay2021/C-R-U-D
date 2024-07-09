@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -93,17 +94,25 @@ class _EmployeeCardState extends State<EmployeeCard> {
             children: [
               Row(
                 children: [
-                  Container(
-                    height: 100,
-                    width: 75,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.orange),
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(widget.image),
-                      ),
+                  CachedNetworkImage(
+                    imageUrl: widget.image,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      height: 100,
+                      width: 75,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300, shape: BoxShape.circle),
                     ),
+                    imageBuilder: (context, imageProvider) {
+                      return Container(
+                        height: 100,
+                        width: 75,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.cover, image: imageProvider),
+                            shape: BoxShape.circle),
+                      );
+                    },
                   ),
                   const Spacer(),
                   GestureDetector(

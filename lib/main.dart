@@ -30,7 +30,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     initialization();
   }
@@ -41,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
