@@ -1,4 +1,4 @@
-# dictionaryapp
+# CURD App
 
 A small projetc, named CRUD app. In this project have Implemented Firebase and store Data in firebase storage and Forebase Real Time Database.
 
